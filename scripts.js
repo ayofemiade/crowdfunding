@@ -89,14 +89,14 @@ document.addEventListener('DOMContentLoaded', () => {
                     <p>${project.description}</p>
                     <div class="timer">${timeRemaining}</div>
                     <div class="progress-bar" style="width: 100%; background-color: #e0e0e0; height: 10px; border-radius: 5px; margin: 10px 0;">
-                        <div style="width: ${progressPercentage}%; background-color: #760a5e; height: 100%; border-radius: 5px;"></div>
+                        <div style="width: ${progressPercentage}%; background-color: #d1697e; height: 100%; border-radius: 5px;"></div>
                     </div>
                     <div class="project-stats">
                         <div>Raised: ₦${project.raised.toLocaleString()} of ₦${project.goal.toLocaleString()}</div>
                         <div>Contributors: ${project.contributors}</div>
                     </div>
                     <button onclick="showProjectDetails(${index})" 
-                        style="width: 100%; padding: 10px; background-color: #760a5e; color: white; border: none; border-radius: 4px; margin-top: 10px;">
+                        style="width: 100%; padding: 10px; background-color: #d1697e; color: white; border: none; border-radius: 4px; margin-top: 10px;">
                         View Campaign Details
                     </button>
                 </div>
@@ -164,23 +164,30 @@ document.addEventListener('DOMContentLoaded', () => {
         };
     }
 
-    window.makeDonation = function(projectIndex, amount) {
-        const customAmount = document.getElementById('customDonationAmount').value;
-        const donationAmount = amount || (customAmount ? parseFloat(customAmount) : 0);
+   // Update the existing makeDonation function
+window.makeDonation = function(projectIndex, amount) {
+    const customAmount = document.getElementById('customDonationAmount')?.value;
+    const donationAmount = amount || (customAmount ? parseFloat(customAmount) : 0);
 
-        if (donationAmount > 0) {
-            const project = projects[projectIndex];
-            project.raised += donationAmount;
-            project.contributors += 1;
-            project.donationHistory.unshift({ donor: 'Anonymous', amount: donationAmount });
-
-            createProjectCards();
-            document.getElementById('projectDetailsModal').style.display = 'none';
-            alert(`Thank you for your donation of ₦${donationAmount.toLocaleString()}!`);
-        } else {
-            alert('Please enter a valid donation amount.');
-        }
+    if (donationAmount > 0) {
+        showPaymentForm(projectIndex, donationAmount);
+    } else {
+        alert('Please enter a valid donation amount.');
     }
+}
+
+
+// Add this function to handle the payment processing
+function processPayment(projectIndex, amount) {
+    const project = projects[projectIndex];
+    project.raised += amount;
+    project.contributors += 1;
+    project.donationHistory.unshift({ donor: 'Anonymous', amount: amount });
+
+    createProjectCards();
+    document.getElementById('projectDetailsModal').style.display = 'none';
+    alert('Thank you for your donation! Your payment has been processed successfully.');
+}
 
     createProjectCards();
 
@@ -214,3 +221,108 @@ document.addEventListener('DOMContentLoaded', () => {
 });
 
 console.log('Scripts loaded successfully!');
+
+// Add this to your scripts.js file
+
+function showPaymentForm(projectIndex, amount) {
+    const projectDetailsModal = document.getElementById('projectDetailsModal');
+    projectDetailsModal.innerHTML = `
+        <div class="modal-content">
+            <span class="close-btn">&times;</span>
+            <h2>Payment Details</h2>
+            <p>Amount to be donated: ₦${amount.toLocaleString()}</p>
+            
+            <form id="paymentForm" class="payment-form">
+                <div class="form-group">
+                    <label for="cardName">Cardholder Name</label>
+                    <input type="text" id="cardName" required placeholder="Enter cardholder name">
+                </div>
+                
+                <div class="form-group">
+                    <label for="cardNumber">Card Number</label>
+                    <input type="text" id="cardNumber" required placeholder="1234 5678 9012 3456" 
+                           maxlength="19" onkeyup="formatCardNumber(this)">
+                </div>
+                
+                <div class="form-row">
+                    <div class="form-group half">
+                        <label for="expiryDate">Expiry Date</label>
+                        <input type="text" id="expiryDate" required placeholder="MM/YY" 
+                               maxlength="5" onkeyup="formatExpiryDate(this)">
+                    </div>
+                    
+                    <div class="form-group half">
+                        <label for="cvv">CVV</label>
+                        <input type="text" id="cvv" required placeholder="123" 
+                               maxlength="3" onkeyup="validateNumeric(this)">
+                    </div>
+                </div>
+                
+                <button type="submit" class="payment-submit-btn">Complete Donation</button>
+            </form>
+        </div>
+    `;
+
+    // Add event listeners for the payment form
+    const paymentForm = document.getElementById('paymentForm');
+    paymentForm.addEventListener('submit', (e) => {
+        e.preventDefault();
+        // Here you would normally integrate with a payment gateway
+        // For now, we'll just simulate a successful payment
+        processPayment(projectIndex, amount);
+    });
+
+    const closeBtn = projectDetailsModal.querySelector('.close-btn');
+    closeBtn.onclick = () => {
+        projectDetailsModal.style.display = 'none';
+    };
+}
+
+// Helper functions for form formatting
+function formatCardNumber(input) {
+    let value = input.value.replace(/\D/g, '');
+    let formattedValue = '';
+    for (let i = 0; i < value.length; i++) {
+        if (i > 0 && i % 4 === 0) {
+            formattedValue += ' ';
+        }
+        formattedValue += value[i];
+    }
+    input.value = formattedValue;
+}
+
+function formatExpiryDate(input) {
+    let value = input.value.replace(/\D/g, '');
+    if (value.length >= 2) {
+        value = value.substring(0, 2) + '/' + value.substring(2);
+    }
+    input.value = value;
+}
+
+function validateNumeric(input) {
+    input.value = input.value.replace(/\D/g, '');
+}
+
+// Update the existing makeDonation function
+window.makeDonation = function(projectIndex, amount) {
+    const customAmount = document.getElementById('customDonationAmount')?.value;
+    const donationAmount = amount || (customAmount ? parseFloat(customAmount) : 0);
+
+    if (donationAmount > 0) {
+        showPaymentForm(projectIndex, donationAmount);
+    } else {
+        alert('Please enter a valid donation amount.');
+    }
+}
+
+// Add this function to handle the payment processing
+function processPayment(projectIndex, amount) {
+    const project = projects[projectIndex];
+    project.raised += amount;
+    project.contributors += 1;
+    project.donationHistory.unshift({ donor: 'Anonymous', amount: amount });
+
+    createProjectCards();
+    document.getElementById('projectDetailsModal').style.display = 'none';
+    alert('Thank you for your donation! Your payment has been processed successfully.');
+}

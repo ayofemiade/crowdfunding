@@ -1,6 +1,6 @@
 :root {
-    --primary-color: #760a5e;
-    --secondary-color: #50c878;
+    --primary-color: #6a2d9c;
+    --secondary-color: #d1697e;
     --background-color: #f4f7f6;
     --text-color: #333;
 }
@@ -157,7 +157,7 @@ nav ul li a:hover, nav ul li a.active {
 }
 
 footer {
-    background-color: #686464;
+    background-color: var(--primary-color);
     color: white;
     padding: 3rem 5%;
 }
@@ -457,4 +457,63 @@ img, video, iframe {
 .modal-content {
     max-height: 90vh;
     overflow-y: auto;
+}
+
+
+/* payment css*/
+
+.payment-form {
+    margin-top: 20px;
+}
+
+.form-group {
+    margin-bottom: 15px;
+}
+
+.form-group label {
+    display: block;
+    margin-bottom: 5px;
+    font-weight: bold;
+    color: var(--text-color);
+}
+
+.form-group input {
+    width: 100%;
+    padding: 10px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    font-size: 16px;
+}
+
+.form-row {
+    display: flex;
+    gap: 15px;
+}
+
+.form-group.half {
+    flex: 1;
+}
+
+.payment-submit-btn {
+    width: 100%;
+    padding: 12px;
+    background-color: var(--primary-color);
+    color: white;
+    border: none;
+    border-radius: 4px;
+    font-size: 16px;
+    cursor: pointer;
+    margin-top: 10px;
+}
+
+.payment-submit-btn:hover {
+    background-color: color-mix(in srgb, var(--primary-color) 80%, white);
+}
+
+/* Style for the payment amount display */
+.modal-content p {
+    margin: 15px 0;
+    font-size: 18px;
+    color: var(--primary-color);
+    font-weight: bold;
 }
